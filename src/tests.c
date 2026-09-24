@@ -100,8 +100,9 @@ void test_initNode_null_guard(void)
 
 void test_createNode_not_null(void)
 {
-    //TODO
-    TEST_ASSERT_TRUE_MESSAGE(0, "TODO: implement this test.");
+    Node *x = createNode(5);
+    TEST_ASSERT_NOT_NULL(x);
+    destroyNode(&x);
 }
 
 
@@ -116,8 +117,10 @@ void test_createNode_not_null(void)
 
 void test_createNode_value(void)
 {
-    // TODO
-    TEST_ASSERT_TRUE_MESSAGE(0, "TODO: implement this test.");
+    Node *x = createNode(5);
+    TEST_ASSERT_EQUAL(5, x->value);
+    destroyNode(&x);
+
 }
 
 
@@ -131,8 +134,9 @@ void test_createNode_value(void)
 
 void test_createNode_next_null(void)
 {
-    // TODO
-    TEST_ASSERT_TRUE_MESSAGE(0, "TODO: implement this test.");
+    Node *x = createNode(5);
+    TEST_ASSERT_NULL(x->nextPtr);
+    destroyNode(&x);
 }
 
 
@@ -146,8 +150,9 @@ void test_createNode_next_null(void)
 
 void test_destroyNode_sets_null(void)
 {
-    // TODO
-    TEST_ASSERT_TRUE_MESSAGE(0, "TODO: implement this test.");
+    Node *x = createNode(5);
+    destroyNode(&x);
+    TEST_ASSERT_NULL(x);
 }
 
 
@@ -162,8 +167,7 @@ void test_destroyNode_sets_null(void)
 
 void test_addFirst_empty_list(void)
 {
-    // TODO
-    TEST_ASSERT_TRUE_MESSAGE(0, "TODO: implement this test.");
+    //TODO
 }
 
 

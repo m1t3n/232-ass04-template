@@ -81,7 +81,7 @@ int   listLength  (Node *headPtr);
 static void _nullify(Node **nodePtrPtr)
 {
     if (nodePtrPtr == NULL){
-        return NULL;
+        return;
     }
     *nodePtrPtr = NULL;
 }
@@ -163,7 +163,7 @@ static Node* _findValue(Node *headPtr, int value)
     Node *currentPtr = headPtr;
     while (currentPtr->value != value){
         currentPtr = currentPtr->nextPtr;
-        if (currentPtr = NULL){
+        if (currentPtr == NULL){
             return NULL;
         }
     }
@@ -228,7 +228,7 @@ Node* createNode(int value)
         fprintf(stderr, "malloc failed.\n"); 
         return NULL;
     }
-    initNode(&newNodePtr, value);
+    initNode(newNodePtr, value); //&newNodePtr
     return newNodePtr;
 }
 
@@ -250,7 +250,12 @@ Node* createNode(int value)
 
 void destroyNode(Node **nodePtrPtr)
 {
-    Node *newNodePtr = malloc(sizeof(Node));
+    if (nodePtrPtr == NULL || *nodePtrPtr == NULL){
+        return;
+    }
+
+    free(nodePtrPtr);
+    _nullify(nodePtrPtr);
 }
 
 
@@ -276,8 +281,15 @@ void destroyNode(Node **nodePtrPtr)
 
 int addFirst(Node **headPtrPtr, Node *newNodePtr)
 {
-    // TODO
-    return -1;
+    if (headPtrPtr == NULL || newNodePtr == NULL){
+        fprintf(stderr, "null.\n");
+        return -1;
+    }
+
+    newNodePtr->nextPtr = *headPtrPtr;
+    *headPtrPtr = newNodePtr;
+
+    return 0;
 }
 
 
@@ -302,7 +314,14 @@ int addFirst(Node **headPtrPtr, Node *newNodePtr)
 
 int addLast(Node **headPtrPtr, Node *newNodePtr)
 {
-    // TODO
+    
+    while (newNodePtr->nextPtr != NULL){
+        newNodePtr = newNodePtr->nextPtr;
+    }
+
+    if (headPtrPtr == NULL){
+        newNodePtr = headPtrPtr;
+    }
     return -1;
 }
 

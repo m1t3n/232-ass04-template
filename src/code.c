@@ -156,19 +156,16 @@ static Node* _findLast(Node *headPtr)
 
 static Node* _findValue(Node *headPtr, int value)
 {
-    if (headPtr == NULL){
-        return NULL;
-    }
-
     Node *currentPtr = headPtr;
-    while (currentPtr->value != value){
-        currentPtr = currentPtr->nextPtr;
-        if (currentPtr == NULL){
-            return NULL;
+    while (currentPtr != NULL){
+       if (currentPtr->value == value){
+            return currentPtr;
         }
+        currentPtr = currentPtr->nextPtr;
     }
 
-    return currentPtr;
+
+    return NULL;
 }
 
 
@@ -314,15 +311,21 @@ int addFirst(Node **headPtrPtr, Node *newNodePtr)
 
 int addLast(Node **headPtrPtr, Node *newNodePtr)
 {
-    
-    while (newNodePtr->nextPtr != NULL){
-        newNodePtr = newNodePtr->nextPtr;
-    }
-
     if (headPtrPtr == NULL){
-        newNodePtr = headPtrPtr;
+        fprintf(stderr, "head is null\n");
+        return -1;
     }
-    return -1;
+    if (newNodePtr == NULL){
+        fprintf(stderr, "newNodePtr is null\n");
+        return -1;
+    }
+    if (*headPtrPtr == NULL){
+        *headPtrPtr = newNodePtr;
+    } else {
+        Node *last = _findLast(*headPtrPtr);
+        last->nextPtr = newNodePtr;
+    }
+    return 0;
 }
 
 
@@ -346,8 +349,25 @@ int addLast(Node **headPtrPtr, Node *newNodePtr)
 
 Node* detachFirst(Node **headPtrPtr)
 {
-    // TODO
-    return NULL;
+    Node *aNode = _findFirst(*headPtrPtr);
+    if (aNode == NULL){
+        return NULL;
+    }
+    Node **currentPtrPtr = headPtrPtr;
+    while (*currentPtrPtr != NULL && *currentPtrPtr != aNode){
+        currentPtrPtr = &((*currentPtrPtr)->nextPtr);
+    }
+    if (*currentPtrPtr == NULL) {
+        return NULL;
+    }
+    *currentPtrPtr = aNode->nextPtr; //point to 2nd node
+    // _findFirst(*headPtrPtr);
+    _nullify(&aNode->nextPtr);
+
+    //headPtrPtr = &((*headPtrPtr)->nextPtr);
+
+
+    return aNode; //detached node RIGHT
 }
 
 
@@ -370,8 +390,22 @@ Node* detachFirst(Node **headPtrPtr)
 
 Node* detachLast(Node **headPtrPtr)
 {
-    // TODO
-    return NULL;
+    if (headPtrPtr == NULL || *headPtrPtr == NULL){
+        return NULL;
+    }
+
+    Node *currentPtr = *headPtrPtr;
+
+    if (currentPtr->nextPtr == NULL){
+        return detachFirst(&currentPtr);
+    }
+    while (currentPtr->nextPtr->nextPtr != NULL){ //check 2nd to last
+        currentPtr = currentPtr->nextPtr;
+    }
+    Node *lastPtr = currentPtr->nextPtr;
+    _nullify(&currentPtr->nextPtr);
+    
+    return lastPtr;
 }
 
 
@@ -395,9 +429,25 @@ Node* detachLast(Node **headPtrPtr)
 
 Node* detachValue(Node **headPtrPtr, int value)
 {
-    // TODO
-    return NULL;
+    Node *valNode = _findValue(*headPtrPtr, value); //to find the val
+    if (valNode == NULL){
+        fprintf(stderr, "not found.\n");
+        return NULL;
+    }
+    if (*headPtrPtr == valNode){ //if it's at head
+        return detachFirst(headPtrPtr);
+    }
+    Node *currentPtr = *headPtrPtr;
+    while (currentPtr->nextPtr != valNode){
+        currentPtr = currentPtr->nextPtr; //go thru list until we find the val
+    }
+
+    currentPtr->nextPtr = valNode->nextPtr;
+    _nullify(&valNode->nextPtr);
+
+    return valNode;
 }
+
 
 
 // ============================================================
@@ -418,8 +468,16 @@ Node* detachValue(Node **headPtrPtr, int value)
 
 int deleteFirst(Node **headPtrPtr)
 {
-    // TODO
-    return -1;
+    if (headPtrPtr == NULL || *headPtrPtr == NULL){
+        return -1;
+    }
+    Node *aNode = detachFirst(headPtrPtr); 
+    if (aNode == NULL){
+        return -1;
+    }
+    destroyNode(&aNode); 
+    return 0;
+    
 }
 
 
@@ -441,8 +499,12 @@ int deleteFirst(Node **headPtrPtr)
 
 int deleteLast(Node **headPtrPtr)
 {
-    // TODO
-    return -1;
+    if (headPtrPtr == NULL){
+        return -1;
+    }
+    Node *aNode = detachLast(headPtrPtr); 
+    destroyNode(&aNode); 
+    return 0;
 }
 
 
@@ -464,8 +526,12 @@ int deleteLast(Node **headPtrPtr)
 
 int deleteValue(Node **headPtrPtr, int value)
 {
-    // TODO
-    return -1;
+    Node *aNode = detachValue(headPtrPtr, value);
+    if (aNode == NULL){
+        return -1;
+    }
+    destroyNode(&aNode);
+    return 0;
 }
 
 
@@ -487,7 +553,12 @@ int deleteValue(Node **headPtrPtr, int value)
 
 void destroyList(Node **headPtrPtr)
 {
-    // TODO
+    if (headPtrPtr == NULL){
+        return;
+    }
+    while (*headPtrPtr != NULL){
+        deleteFirst(headPtrPtr);
+    }
 }
 
 
@@ -502,8 +573,15 @@ void destroyList(Node **headPtrPtr)
 
 int printList(Node *headPtr)
 {
-    // TODO
-    return -1;
+    if (headPtr == NULL){
+        fprintf(stdout, "List is empty.\n");
+        return -1;
+    }
+    while (headPtr != NULL){
+        printf("%d", headPtr->value);
+        headPtr = headPtr->nextPtr;
+    }
+    return 0;
 }
 
 
@@ -516,9 +594,18 @@ int printList(Node *headPtr)
 
 int listLength(Node *headPtr)
 {
-    // TODO
-    return 0;
+    if (headPtr == NULL){
+        return 0;
+    }
+    int count = 0;
+    while (headPtr != NULL){
+        headPtr = headPtr->nextPtr;
+        count++;
+    }
+    return count;
 }
 
 
 //referred to stack overflow for stderr format
+//referred to geeks for geeks's linked list printing example
+//gemini/google ai overview helped with the return statements in the detach functions

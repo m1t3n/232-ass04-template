@@ -608,4 +608,4 @@ int listLength(Node *headPtr)
 
 //referred to stack overflow for stderr format
 //referred to geeks for geeks's linked list printing example
-//gemini/google ai overview helped with the return statements in the detach functions
+//gemini/google ai overview helped with the return statements in the detach functions, listLength, & some unity tests
